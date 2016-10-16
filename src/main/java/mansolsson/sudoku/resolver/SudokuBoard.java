@@ -21,7 +21,7 @@ public class SudokuBoard {
         if (!isInitialBoardValid()) {
             return false;
         }
-        
+
         int index = 0;
         while (index < NR_TILES) {
             if (index < 0) {
