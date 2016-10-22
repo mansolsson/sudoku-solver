@@ -30,6 +30,35 @@ public class SudokuBoard {
 		return possibleValues;
 	}
 
+	private List<Integer> getNumbersInRow(final int y) {
+		final List<Integer> numbersInRow = new ArrayList<>();
+		for (int i = 0; i < ROW_WIDTH; i++) {
+			numbersInRow.add(board.get(ROW_WIDTH * y + i).getValue());
+		}
+		return numbersInRow;
+	}
+
+	private List<Integer> getNumbersInColumn(final int x) {
+		final List<Integer> numbersInColumn = new ArrayList<>();
+		for (int i = 0; i < COLUMN_HEIGHT; i++) {
+			numbersInColumn.add(board.get(ROW_WIDTH * i + x).getValue());
+		}
+		return numbersInColumn;
+	}
+
+	private List<Integer> getNumbersInBox(final int x, final int y) {
+		final List<Integer> numbersInBox = new ArrayList<>();
+		final int startOfBoxX = (x / BOX_WIDTH) * BOX_WIDTH;
+		final int startOfBoxY = (y / BOX_WIDTH) * BOX_WIDTH;
+		for (int boxX = 0; boxX < BOX_WIDTH; boxX++) {
+			for (int boxY = 0; boxY < BOX_WIDTH; boxY++) {
+				final int index = (startOfBoxY + boxY) * ROW_WIDTH + (startOfBoxX + boxX);
+				numbersInBox.add(board.get(index).getValue());
+			}
+		}
+		return numbersInBox;
+	}
+
 	public boolean lockTilesWithOnePossibleValueWithState(final TileState state) {
 		boolean anyTileLocked = false;
 		for (int index = 0; index < board.size(); index++) {
@@ -140,35 +169,6 @@ public class SudokuBoard {
 			.forEach(e -> board.get(e.getValue().get(0)).setValueAndState(e.getKey(), state));
 
 		return numberPossibleIn.values().stream().anyMatch(l -> l.size() == 1);
-	}
-
-	private List<Integer> getNumbersInRow(final int y) {
-		final List<Integer> numbersInRow = new ArrayList<>();
-		for (int i = 0; i < ROW_WIDTH; i++) {
-			numbersInRow.add(board.get(ROW_WIDTH * y + i).getValue());
-		}
-		return numbersInRow;
-	}
-
-	private List<Integer> getNumbersInColumn(final int x) {
-		final List<Integer> numbersInColumn = new ArrayList<>();
-		for (int i = 0; i < COLUMN_HEIGHT; i++) {
-			numbersInColumn.add(board.get(ROW_WIDTH * i + x).getValue());
-		}
-		return numbersInColumn;
-	}
-
-	private List<Integer> getNumbersInBox(final int x, final int y) {
-		final List<Integer> numbersInBox = new ArrayList<>();
-		final int startOfBoxX = (x / BOX_WIDTH) * BOX_WIDTH;
-		final int startOfBoxY = (y / BOX_WIDTH) * BOX_WIDTH;
-		for (int boxX = 0; boxX < BOX_WIDTH; boxX++) {
-			for (int boxY = 0; boxY < BOX_WIDTH; boxY++) {
-				final int index = (startOfBoxY + boxY) * ROW_WIDTH + (startOfBoxX + boxX);
-				numbersInBox.add(board.get(index).getValue());
-			}
-		}
-		return numbersInBox;
 	}
 
 	public List<Tile> getBoard() {
