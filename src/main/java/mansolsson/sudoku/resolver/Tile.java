@@ -2,26 +2,27 @@ package mansolsson.sudoku.resolver;
 
 public class Tile {
     private int value;
-    private boolean constant;
-    
+    private TileState state;
+
     public Tile(final Integer value) {
         this.value = value == null ? 0 : value.intValue();
-        this.constant = value != null;
+        this.state = value == null ? TileState.UNASSIGNED : TileState.LOCKED;
     }
-    
-    public void setValue(final int value) {
-        this.value = value;
+
+    public boolean isAssigned() {
+        return state != TileState.UNASSIGNED;
     }
-    
+
+    public void setValueAndState(final int value, final TileState state) {
+    	this.value = value;
+    	this.state = state;
+    }
+
     public int getValue() {
         return value;
     }
-    
-    public void setConstant(final boolean constant) {
-        this.constant = constant;
-    }
-    
-    public boolean isConstant() {
-        return constant;
-    }
+
+	public TileState getState() {
+		return state;
+	}
 }

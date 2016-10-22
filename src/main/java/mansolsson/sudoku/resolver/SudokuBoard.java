@@ -3,156 +3,179 @@ package mansolsson.sudoku.resolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.IntPredicate;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SudokuBoard {
-    private static final int BOX_WIDTH = 3;
-    private static final int ROW_WIDTH = BOX_WIDTH * BOX_WIDTH;
-    private static final int NR_TILES = ROW_WIDTH * ROW_WIDTH;
-    private static final List<Integer> NUMBERS = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
-    
-    private final List<Tile> board = new ArrayList<>();
+	protected static final int BOX_WIDTH = 3;
+	protected static final int ROW_WIDTH = BOX_WIDTH * BOX_WIDTH;
+	private static final int COLUMN_HEIGHT = ROW_WIDTH;
+	protected static final int NR_TILES = ROW_WIDTH * ROW_WIDTH;
+	private static final List<Integer> ALL_POSSIBLE_NUMBERS = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-    public SudokuBoard(final List<Integer> tiles) {
-        tiles.stream().map(Tile::new).forEach(board::add);
-    }
+	private final List<Tile> board;
 
-    public boolean solve() {
-        if (!isInitialBoardValid()) {
-            return false;
-        }
+	public SudokuBoard(final List<Tile> board) {
+		this.board = board;
+	}
 
-        int index = 0;
-        while (index < NR_TILES) {
-            if (index < 0) {
-                return false;
-            } else if (board.get(index).isConstant()) {
-                index++;
-            } else {
-                final Integer lowestPossibleValue = getLowestPossibleValue(index);
-                if (lowestPossibleValue == null) {
-                    board.get(index).setValue(0);
-                    index--;
-                } else {
-                    board.get(index).setValue(lowestPossibleValue);
-                    index++;
-                }
-            }
-        }
-        return true;
-    }
+	public List<Integer> getPossibleValues(final int x, final int y) {
+		final List<Integer> possibleValues = new ArrayList<>(ALL_POSSIBLE_NUMBERS);
 
-    private boolean isInitialBoardValid() {
-        return NR_TILES == board.size() && allNumbersValid() && validBoardState();
-    }
+		possibleValues.removeAll(getNumbersInRow(y));
+		possibleValues.removeAll(getNumbersInColumn(x));
+		possibleValues.removeAll(getNumbersInBox(x, y));
 
-    private boolean allNumbersValid() {
-        final IntPredicate invalidValue = v -> v < 0 || v > ROW_WIDTH;
-        return !board.stream().mapToInt(Tile::getValue).anyMatch(invalidValue);
-    }
-    
-    private boolean validBoardState() {
-        return validateRows() && validateColumns() && validateBoxes();
-    }
+		return possibleValues;
+	}
 
-    private boolean validateRows() {
-        for (int row = 0; row < ROW_WIDTH; row++) {
-            if (!isRowValid(row)) {
-                return false;
-            }
-        }
-        return true;
-    }
+	public boolean lockTilesWithOnePossibleValueWithState(final TileState state) {
+		boolean anyTileLocked = false;
+		for (int index = 0; index < board.size(); index++) {
+			if (!board.get(index).isAssigned()) {
+				final List<Integer> values = getPossibleValues(index % ROW_WIDTH, index / ROW_WIDTH);
+				if (values.size() == 1) {
+					board.get(index).setValueAndState(values.get(0), state);
+					anyTileLocked = true;
+				}
+			}
+		}
+		return anyTileLocked;
+	}
 
-    private boolean isRowValid(final int row) {
-        final int[] occurences = new int[ROW_WIDTH + 1];
-        for (int i = 0; i < ROW_WIDTH; i++) {
-            final int index = row * ROW_WIDTH + i;
-            if (board.get(index).getValue() != 0) {
-                occurences[board.get(index).getValue()]++;
-            }
-        }
-        return !Arrays.stream(occurences).anyMatch(i -> i > 1);
-    }
+	public boolean lockTilesInAllRowsWithState(final TileState state) {
+		boolean anyTileLocked = false;
+		for (int y = 0; y < ROW_WIDTH; y++) {
+			if (lockTilesInRowWithState(y, state)) {
+				anyTileLocked = true;
+			}
+		}
+		return anyTileLocked;
+	}
 
-    private boolean validateColumns() {
-        for (int column = 0; column < ROW_WIDTH; column++) {
-            if (!isColumnValid(column)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isColumnValid(final int column) {
-        final int[] occurences = new int[ROW_WIDTH + 1];
-        for (int i = 0; i < ROW_WIDTH; i++) {
-            final int index = i * ROW_WIDTH + column;
-            if (board.get(index).getValue() != 0) {
-                occurences[board.get(index).getValue()]++;
-            }
-        }
-        return !Arrays.stream(occurences).anyMatch(i -> i > 1);
-    }
+	private boolean lockTilesInRowWithState(final int y, final TileState state) {
+		final List<Integer> usedNumbers = getNumbersInRow(y);
+		final Map<Integer, List<Integer>> numberPossibleIn = ALL_POSSIBLE_NUMBERS.stream()
+				.filter(n -> !usedNumbers.contains(n))
+				.collect(Collectors.toMap(Function.identity(), n -> new ArrayList<>()));
 
-    private boolean validateBoxes() {
-        for (int box = 0; box < ROW_WIDTH; box++) {
-            final int x = box % BOX_WIDTH;
-            final int y = box / BOX_WIDTH;
-            if (!isBoxValid(x, y)) {
-                return false;
-            }
-        }
-        return true;
-    }
+		for (int x = 0; x < ROW_WIDTH; x++) {
+			final int index = y * ROW_WIDTH + x;
+			if (!board.get(index).isAssigned()) {
+				final List<Integer> possibleValues = getPossibleValues(x, y);
+				possibleValues.stream().filter(numberPossibleIn::containsKey).map(numberPossibleIn::get).forEach(list -> list.add(index));
+			}
+		}
 
-    private boolean isBoxValid(final int boxX, final int boxY) {
-        final int[] occurences = new int[ROW_WIDTH + 1];
-        for (int x = 0; x < BOX_WIDTH; x++) {
-            for (int y = 0; y < BOX_WIDTH; y++) {
-                final int index = (boxX * BOX_WIDTH + x) + (boxY * ROW_WIDTH * BOX_WIDTH + (y * ROW_WIDTH));
-                if (board.get(index).getValue() != 0) {
-                    occurences[board.get(index).getValue()]++;
-                }
-            }
-        }
-        return !Arrays.stream(occurences).anyMatch(i -> i > 1);
-    }
+		numberPossibleIn.entrySet().stream()
+			.filter(e -> e.getValue().size() == 1)
+			.forEach(e -> board.get(e.getValue().get(0)).setValueAndState(e.getKey(), state));
 
-    private Integer getLowestPossibleValue(final int index) {
-        final List<Integer> possibleValues = new ArrayList<>(NUMBERS);
-        for (int i = 1; i <= board.get(index).getValue(); i++) {
-            possibleValues.remove(Integer.valueOf(i));
-        }
+		return numberPossibleIn.values().stream().anyMatch(l -> l.size() == 1);
+	}
 
-        final int row = index / ROW_WIDTH;
-        for (int i = 0; i < ROW_WIDTH; i++) {
-            possibleValues.remove(Integer.valueOf(board.get(row * ROW_WIDTH + i).getValue()));
-        }
+	public boolean lockTilesInAllColumnsWithState(final TileState state) {
+		boolean anyTileLocked = false;
+		for (int x = 0; x < ROW_WIDTH; x++) {
+			if (lockTilesInColumnWithState(x, state)) {
+				anyTileLocked = true;
+			}
+		}
+		return anyTileLocked;
+	}
 
-        final int col = index % ROW_WIDTH;
-        for (int i = 0; i < ROW_WIDTH; i++) {
-            possibleValues.remove(Integer.valueOf(board.get(ROW_WIDTH * i + col).getValue()));
-        }
+	private boolean lockTilesInColumnWithState(final int x, final TileState state) {
+		final List<Integer> usedNumbers = getNumbersInColumn(x);
+		final Map<Integer, List<Integer>> numberPossibleIn = ALL_POSSIBLE_NUMBERS.stream()
+				.filter(n -> !usedNumbers.contains(n))
+				.collect(Collectors.toMap(Function.identity(), n -> new ArrayList<>()));
 
-        final int boxY = index / ROW_WIDTH / BOX_WIDTH;
-        final int boxX = index % ROW_WIDTH / BOX_WIDTH;
+		for (int y = 0; y < ROW_WIDTH; y++) {
+			final int index = y * ROW_WIDTH + x;
+			if (!board.get(index).isAssigned()) {
+				final List<Integer> possibleValues = getPossibleValues(x, y);
+				possibleValues.stream().filter(numberPossibleIn::containsKey).map(numberPossibleIn::get).forEach(list -> list.add(index));
+			}
+		}
 
-        for (int x = 0; x < BOX_WIDTH; x++) {
-            for (int y = 0; y < BOX_WIDTH; y++) {
-                final int i = (boxX * BOX_WIDTH + x) + (boxY * ROW_WIDTH * BOX_WIDTH + (y * ROW_WIDTH));
-                possibleValues.remove(Integer.valueOf(board.get(i).getValue()));
-            }
-        }
-        return possibleValues.isEmpty() ? null : possibleValues.get(0);
-    }
+		numberPossibleIn.entrySet().stream()
+			.filter(e -> e.getValue().size() == 1)
+			.forEach(e -> board.get(e.getValue().get(0)).setValueAndState(e.getKey(), state));
 
-    public void print() {
-        for (int i = 0; i < board.size(); i++) {
-            System.out.print(board.get(i).getValue());
-            if ((i + 1) % ROW_WIDTH == 0) {
-                System.out.println();
-            }
-        }
-    }
+		return numberPossibleIn.values().stream().anyMatch(l -> l.size() == 1);
+	}
+
+	public boolean lockAllTilesInBoxes(final TileState state) {
+		boolean anyTileLocked = false;
+		for (int box = 0; box < ROW_WIDTH; box++) {
+			if (lockTilesInBoxWithState(box % BOX_WIDTH * BOX_WIDTH, box / BOX_WIDTH * BOX_WIDTH, state)) {
+				anyTileLocked = true;
+			}
+		}
+		return anyTileLocked;
+	}
+
+	private boolean lockTilesInBoxWithState(final int startX, final int startY, final TileState state) {
+		final List<Integer> usedNumbers = getNumbersInBox(startX, startY);
+		final Map<Integer, List<Integer>> numberPossibleIn = ALL_POSSIBLE_NUMBERS.stream()
+																.filter(n -> !usedNumbers.contains(n))
+																.collect(Collectors.toMap(Function.identity(), n -> new ArrayList<>()));
+
+		for (int x = 0; x < BOX_WIDTH; x++) {
+			for (int y = 0; y < BOX_WIDTH; y++) {
+				final int index = (startX + x) + (startY + y) * ROW_WIDTH;
+				if (!board.get(index).isAssigned()) {
+					final List<Integer> possibleValues = getPossibleValues(startX + x, startY + y);
+					possibleValues.stream()
+						.filter(numberPossibleIn::containsKey)
+						.map(numberPossibleIn::get)
+						.forEach(list -> list.add(index));
+				}
+			}
+		}
+
+		numberPossibleIn.entrySet().stream()
+			.filter(e -> e.getValue().size() == 1)
+			.forEach(e -> board.get(e.getValue().get(0)).setValueAndState(e.getKey(), state));
+
+		return numberPossibleIn.values().stream().anyMatch(l -> l.size() == 1);
+	}
+
+	private List<Integer> getNumbersInRow(final int y) {
+		final List<Integer> numbersInRow = new ArrayList<>();
+		for (int i = 0; i < ROW_WIDTH; i++) {
+			numbersInRow.add(board.get(ROW_WIDTH * y + i).getValue());
+		}
+		return numbersInRow;
+	}
+
+	private List<Integer> getNumbersInColumn(final int x) {
+		final List<Integer> numbersInColumn = new ArrayList<>();
+		for (int i = 0; i < COLUMN_HEIGHT; i++) {
+			numbersInColumn.add(board.get(ROW_WIDTH * i + x).getValue());
+		}
+		return numbersInColumn;
+	}
+
+	private List<Integer> getNumbersInBox(final int x, final int y) {
+		final List<Integer> numbersInBox = new ArrayList<>();
+		final int startOfBoxX = (x / BOX_WIDTH) * BOX_WIDTH;
+		final int startOfBoxY = (y / BOX_WIDTH) * BOX_WIDTH;
+		for (int boxX = 0; boxX < BOX_WIDTH; boxX++) {
+			for (int boxY = 0; boxY < BOX_WIDTH; boxY++) {
+				final int index = (startOfBoxY + boxY) * ROW_WIDTH + (startOfBoxX + boxX);
+				numbersInBox.add(board.get(index).getValue());
+			}
+		}
+		return numbersInBox;
+	}
+
+	public List<Tile> getBoard() {
+		return board;
+	}
+
+	public Tile get(final int index) {
+		return board.get(index);
+	}
 }
