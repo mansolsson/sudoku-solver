@@ -2,7 +2,6 @@ package mansolsson.sudoku.resolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.IntPredicate;
@@ -168,7 +167,7 @@ public class SudokuPuzzle {
 		return possibleValues.isEmpty() ? Optional.empty() : Optional.of(possibleValues.get(0));
 	}
 
-	private Collection<?> getAlreadyTriedNumbers(final int index) {
+	private List<Integer> getAlreadyTriedNumbers(final int index) {
 		final List<Integer> numbers = new ArrayList<>();
 		for (int number = 1; number <= board.get(index).getValue(); number++) {
 			numbers.add(number);

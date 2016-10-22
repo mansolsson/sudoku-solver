@@ -119,8 +119,8 @@ public class SudokuBoard {
 	private boolean lockTilesInBoxWithState(final int startX, final int startY, final TileState state) {
 		final List<Integer> usedNumbers = getNumbersInBox(startX, startY);
 		final Map<Integer, List<Integer>> numberPossibleIn = ALL_POSSIBLE_NUMBERS.stream()
-																.filter(n -> !usedNumbers.contains(n))
-																.collect(Collectors.toMap(Function.identity(), n -> new ArrayList<>()));
+				.filter(n -> !usedNumbers.contains(n))
+				.collect(Collectors.toMap(Function.identity(), n -> new ArrayList<>()));
 
 		for (int x = 0; x < BOX_WIDTH; x++) {
 			for (int y = 0; y < BOX_WIDTH; y++) {
