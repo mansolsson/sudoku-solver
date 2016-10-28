@@ -78,10 +78,8 @@ public final class Gui extends Application {
     }
 
     private void solveBoard() {
-        final List<Integer> valuesFromGui = fields.stream()
-                                                  .map(TextField::getText)
-                                                  .map(this::getNumber)
-                                                  .collect(Collectors.toList());
+        final List<Integer> valuesFromGui = fields.stream().map(TextField::getText).map(this::getNumber)
+                .collect(Collectors.toList());
 
         final SudokuPuzzle puzzle = new SudokuPuzzle(valuesFromGui);
         puzzle.solve();

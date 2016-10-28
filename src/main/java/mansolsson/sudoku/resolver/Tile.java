@@ -14,15 +14,15 @@ public class Tile {
     }
 
     public void setValueAndState(final int value, final TileState state) {
-    	this.value = value;
-    	this.state = state;
+        this.value = value;
+        this.state = state;
     }
 
     public int getValue() {
         return value;
     }
 
-	public TileState getState() {
-		return state;
-	}
+    public TileState getState() {
+        return state;
+    }
 }
