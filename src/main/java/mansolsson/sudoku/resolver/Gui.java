@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -14,7 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public final class Gui extends Application {
-    final List<TextField> fields = new ArrayList<>();
+    private final List<TextField> fields = new ArrayList<>();
 
     public static void main(final String[] args) {
         launch(args);
@@ -71,10 +73,10 @@ public final class Gui extends Application {
     }
 
     private void addSolveButton(final GridPane gridPane) {
-        final Button button = new Button();
-        button.setText("Solve");
-        button.setOnAction(e -> solveBoard());
-        gridPane.add(button, 0, 9, 2, 1);
+        final Button solveButton = new Button();
+        solveButton.setText("Solve");
+        solveButton.setOnAction(e -> solveBoard());
+        gridPane.add(solveButton, 0, 9, 2, 1);
     }
 
     private void solveBoard() {
@@ -82,17 +84,25 @@ public final class Gui extends Application {
                 .collect(Collectors.toList());
 
         final SudokuPuzzle puzzle = new SudokuPuzzle(valuesFromGui);
-        puzzle.solve();
+        final boolean result = puzzle.solve();
 
-        for (int i = 0; i < fields.size(); i++) {
-            fields.get(i).setText(puzzle.getBoard().get(i).toString());
+        if (!result) {
+            final Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("No possible solution.");
+            alert.showAndWait();
+        } else {
+            for (int i = 0; i < fields.size(); i++) {
+                fields.get(i).setText(puzzle.getBoard().get(i).toString());
+            }
         }
     }
 
     private Integer getNumber(final String number) {
         try {
             return Integer.valueOf(number);
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException e) {
             return null;
         }
     }
@@ -101,7 +111,7 @@ public final class Gui extends Application {
         final Button clearButton = new Button();
         clearButton.setText("Clear");
         clearButton.setOnAction(e -> clearBoard());
-        gridPane.add(clearButton, 2, 9, 2, 1);
+        gridPane.add(clearButton, 7, 9, 2, 1);
     }
 
     private void clearBoard() {
