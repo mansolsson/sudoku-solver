@@ -1,8 +1,9 @@
 package mansolsson.sudoku.resolver;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -68,7 +69,7 @@ public final class Gui extends Application {
 
     private TextField createTextField() {
         final TextField textField = new TextField();
-        textField.setTextFormatter(new TextFormatter<>(c -> c.getControlNewText().matches("\\d?") ? c : null));
+        textField.setTextFormatter(new TextFormatter<>(c -> c.getControlNewText().matches("[1-9]?") ? c : null));
         return textField;
     }
 
@@ -80,8 +81,10 @@ public final class Gui extends Application {
     }
 
     private void solveBoard() {
-        final List<Integer> valuesFromGui = fields.stream().map(TextField::getText).map(this::getNumber)
-                .collect(Collectors.toList());
+        final List<Integer> valuesFromGui = fields.stream()
+                                                  .map(TextField::getText)
+                                                  .map(this::getNumber)
+                                                  .collect(toList());
 
         final SudokuPuzzle puzzle = new SudokuPuzzle(valuesFromGui);
         final boolean result = puzzle.solve();

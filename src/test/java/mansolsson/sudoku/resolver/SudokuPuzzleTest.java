@@ -1,10 +1,10 @@
 package mansolsson.sudoku.resolver;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Rule;
@@ -18,7 +18,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfColumn() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, 3, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -38,7 +38,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfRow() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, 2, n, n, n, n, 2, n,
@@ -58,7 +58,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfBox() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, 1, n, n, n, n, n,
 				n, n, n, n, 1, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -78,7 +78,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfNumberOfTiles() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -98,7 +98,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfNumberTooBig() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -118,7 +118,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void initialBoardNotValidBecauseOfNumberTooSmall() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -138,7 +138,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void unsolvableSudoku() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				1, 3, n, 4, 5, 6, 7, 8, 9,
 				4, 5, 6, 7, 8, 9, 1, 2, 3,
 				7, 8, 9, 1, 2, 3, 4, 5, 6,
@@ -158,7 +158,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveEmptyBoard() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
@@ -168,7 +168,7 @@ public class SudokuPuzzleTest {
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n,
 				n, n, n, n, n, n, n, n, n);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				1, 2, 3, 4, 5, 6, 7, 8, 9,
 				4, 5, 6, 7, 8, 9, 1, 2, 3,
 				7, 8, 9, 1, 2, 3, 4, 5, 6,
@@ -189,7 +189,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveRealBoard1() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, 6, n, n, n, n, n, n, n,
 				3, n, n, n, 2, 8, n, n, n,
 				n, n, 2, 6, 3, 7, n, n, n,
@@ -199,7 +199,7 @@ public class SudokuPuzzleTest {
 				n, 5, n, 4, 6, 1, 7, n, n,
 				n, 9, 7, n, n, n, n, 6, n,
 				4, n, n, n, n, n, n, 8, n);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				9, 6, 8, 1, 5, 4, 2, 3, 7,
 				3, 7, 4, 9, 2, 8, 1, 5, 6,
 				5, 1, 2, 6, 3, 7, 9, 4, 8,
@@ -220,7 +220,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveRealBoard2() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				7, 8, n, n, n, n, n, n, n,
 				n, n, n, n, n, 6, n, n, 5,
 				n, n, 2, 8, n, 3, n, 7, n,
@@ -230,7 +230,7 @@ public class SudokuPuzzleTest {
 				n, 6, n, n, 4, 7, 2, 3, n,
 				n, n, n, 2, 5, n, 4, n, n,
 				n, n, 1, n, n, n, n, 5, n);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				7, 8, 6, 9, 2, 5, 3, 4, 1,
 				1, 3, 9, 4, 7, 6, 8, 2, 5,
 				4, 5, 2, 8, 1, 3, 6, 7, 9,
@@ -251,7 +251,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveRealBoard3() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				5, n, n, 6, n, n, n, 4, n,
 				n, n, n, 2, 5, n, n, 9, n,
 				n, n, 8, n, n, n, n, 3, n,
@@ -261,7 +261,7 @@ public class SudokuPuzzleTest {
 				6, n, 2, n, n, 9, n, n, n,
 				n, n, n, 7, n, n, n, n, 4,
 				7, n, n, n, n, n, 1, 5, n);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				5, 2, 9, 6, 3, 8, 7, 4, 1,
 				3, 1, 7, 2, 5, 4, 6, 9, 8,
 				4, 6, 8, 9, 7, 1, 5, 3, 2,
@@ -283,7 +283,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveRealBoard4() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				3, 1, n, n, 9, n, n, n, n,
 				n, n, n, n, n, n, n, 5, n,
 				n, n, n, 7, 4, 5, n, n, n,
@@ -293,7 +293,7 @@ public class SudokuPuzzleTest {
 				n, n, 9, 3, n, n, n, n, n,
 				7, 5, 1, n, n, n, n, n, n,
 				n, n, n, 5, 1, 6, n, n, 2);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				3, 1, 5, 8, 9, 2, 6, 7, 4,
 				2, 7, 4, 1, 6, 3, 8, 5, 9,
 				9, 8, 6, 7 ,4, 5, 1, 2, 3,
@@ -314,7 +314,7 @@ public class SudokuPuzzleTest {
 	@Test
 	public void solveRealBoard5() {
 		final Integer n = null;
-		final List<Integer> board = Arrays.asList(
+		final List<Integer> board = asList(
 				n, n, n, 5, 6, 3, n, n, 4,
 				n, n, n, n, n, n, n, n, n,
 				7, n, 9, n, n, n, n, n, 8,
@@ -324,7 +324,7 @@ public class SudokuPuzzleTest {
 				n, 3, n, n, n, 2, 1, n, n,
 				n, 1, n, n, n, n, 4, n, 5,
 				n, n, 6, n, 3, n, n, n, n);
-		final List<Integer> expected = Arrays.asList(
+		final List<Integer> expected = asList(
 				2, 8, 1, 5, 6, 3, 9, 7, 4,
 				6, 4, 3, 9, 7, 8, 5, 2, 1,
 				7, 5, 9, 4, 2, 1, 3, 6, 8,
