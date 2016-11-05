@@ -1,5 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'application'
+}
+
+mainClassName = 'mansolsson.sudoku.resolver.Gui'
 
 repositories {
     mavenCentral()
